@@ -11,14 +11,14 @@
 
 using namespace std;
 
-Map::Map() {
+Map::Map(RobotParameters& params) {
 	//the raw pixels
 	vector<unsigned char> image;
 
 	unsigned width, height;
 
 	// Geting the file path
-	this->_filename = ConfigurationManager::getMapLocation();
+	this->_filename = params.GetMapPath();
 
 	// Decoding the image from the path we got earlier
 	unsigned error = lodepng::decode(image, width, height, this->_filename);
@@ -51,13 +51,13 @@ Map::Map() {
 	}
 
 	// Getting the map resolution
-	_mapResolution = ConfigurationManager::getMapResolution();
+	_mapResolution = params.GetMapResolution();
 	// Getting the grid resolution
-	int gridResolution = ConfigurationManager::getGridResolution();
+	int gridResolution = params.GetGridResolution();
 
 	// Getting the robot size x,y
 	int robot_size_x, robot_size_y;
-	ConfigurationManager::getRobotSize(robot_size_x, robot_size_y);
+	params.GetRobotSize(robot_size_x, robot_size_y);
 
 	// creating the the puff size
 	int puffSize = ceil(max(robot_size_x, robot_size_y) / _mapResolution/ 2);
@@ -163,19 +163,14 @@ Map::Map() {
 		}
 	}
 
-	int colStart, rowStart;
-	double yawStart;
-	ConfigurationManager::getStartLocation(colStart, rowStart, yawStart);
-	rowStart = (rowStart * _mapResolution) / gridResolution;
-	colStart = (colStart * _mapResolution) / gridResolution;
+	Position startPosition = Position(
+			((params.GetStartLocation().getRow() * _mapResolution) / gridResolution),
+			((params.GetStartLocation().getCol() * _mapResolution) / gridResolution),
+			params.GetStartLocation().getYaw());
 
-	int colGoal, rowGoal;
-	ConfigurationManager::getGoal(colGoal, rowGoal);
-	rowGoal = (rowGoal * _mapResolution) / gridResolution;
-	colGoal = (colGoal * _mapResolution) / gridResolution;
-
-	Position startPosition = Position(rowStart, colStart, yawStart);
-	Point goalPoint = Point(rowGoal, colGoal);
+	Point goalPoint = Point(
+			((params.GetGoalLocation().getRow() * _mapResolution) / gridResolution),
+			((params.GetGoalLocation().getCol() * _mapResolution) / gridResolution));
 
 	this->_grid = Grid(grid_height, grid_width, gridResolution, height, width,
 			startPosition, goalPoint);
@@ -207,4 +202,3 @@ double Map::getMapResolution() {
 Map::~Map() {
 	// TODO Auto-generated destructor stub
 }
-

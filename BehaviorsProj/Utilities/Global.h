@@ -8,9 +8,10 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
+#include <math.h>
 using namespace std;
 
-#define PLAYER 0
+#define PLAYER 1
 #define DEBUG 0
 //#define ROBOT_IP "localhost"
 #define ROBOT_IP "10.10.245.63"
@@ -89,10 +90,5 @@ const double END_LEFT_RAYS_RANGE_ANGLE = 120;
 #define ANGLE_DOWN_LEFT -2.356
 #define ANGLE_DOWN_RIGHT -0.785
 
-class Global {
-public:
-	Global();
-	virtual ~Global();
-};
 
 #endif /* GLOBAL_H_ */

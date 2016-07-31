@@ -11,16 +11,29 @@
 #include "../Utilities/Global.h"
 #include "../Utilities/Position.h"
 #include "../ConfigurationManager.h"
+#include "../Utilities/Point.h"
 
 class WayPointsManager {
 private:
 	vector<Position> _wayPoints;
+	unsigned _last_Point;
+	int _last_Direction;
+	// Claculated path
+	vector<Point> _path;
 public:
-	WayPointsManager();
+	WayPointsManager(RobotParameters& params);
 	virtual ~WayPointsManager();
 	vector<Position> getWayPoints();
 	void addWayPoint(Position waypoint);
+
+	int getNextWayPoint();
+	void calculateWayPoints();
+
 	void changeWaypointToImageResolution();
+
+private:
+	double _mapRes;
+	int _gridRes;
 };
 
 #endif /* WAYPOINTSMANAGER_H_ */

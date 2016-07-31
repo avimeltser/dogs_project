@@ -12,6 +12,7 @@
 #include "../Utilities/Point.h"
 #include "../Utilities/Global.h"
 #include "../Path/WayPointsManager.h"
+#include "../ConfigurationManager.h"
 #include "math.h"
 #include <queue>
 
@@ -31,7 +32,7 @@ private:
 	int** createPowerGrid();
 
 public:
-	PathSearcher(Grid grid);
+	PathSearcher(RobotParameters& prm, Grid grid);
 	virtual ~PathSearcher();
 
 	vector<Point> searchPath(Point startPoint, Point goalPoint);

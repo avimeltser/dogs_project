@@ -14,6 +14,8 @@
 #include "../ConfigurationManager.h"
 #include "Grid.h"
 #include "../Utilities/Global.h"
+#include <iostream>
+#include <fstream>
 
 class Map {
 private:
@@ -26,7 +28,7 @@ private:
 	double _mapResolution;
 
 public:
-	Map();
+	Map(RobotParameters& params);
 	void loadMap();
 	virtual ~Map();
 

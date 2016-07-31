@@ -6,100 +6,101 @@
  */
 
 #include "ConfigurationManager.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
-map<string, string> ConfigurationManager::_configs;
-
-std::string trim(std::string const& source, char const* delims = " \t\r\n") {
-  std::string result(source);
-  std::string::size_type index = result.find_last_not_of(delims);
-  if(index != std::string::npos)
-    result.erase(++index);
-
-  index = result.find_first_not_of(delims);
-  if(index != std::string::npos)
-    result.erase(0, index);
-  else
-    result.erase();
-  return result;
-}
-
-ConfigurationManager::ConfigurationManager() {
-	// check if the file was opened successfully
-	ifstream file("parameters.txt");
-
+RobotParameters::RobotParameters(char* path)
+{
 	  string line;
-	  string name;
-	  string value;
-	  int posEqual;
+	  ifstream myfile(path);
 
-	  // Run over the parameter file lines
-	  while (std::getline(file,line)) {
+	  if (myfile.is_open())
+	  {
+	    while ( getline (myfile,line) )
+	    {
+			std::istringstream iss(line);
 
-		  // Check if it is the last line
-	    if (! line.length()) {continue;}
-
-	    // Read the current parameter
-	    posEqual=line.find(':');
-	    name  = trim(line.substr(0,posEqual));
-	    value = trim(line.substr(posEqual+1));
-
-	    // Enter the parameter into the config variable
-	    _configs.insert(make_pair(name, value));
-
-	    // print variable for debugging
-	    cout << name << " : " << value << endl;
+	    	if (line.find("map:") != string::npos)
+	    	{
+				string mapHolder;
+				iss >> mapHolder >> this->map_path;
+			}
+	    	else if (line.find("startLocation:") != string::npos)
+			{
+				int a, b;
+				double c;
+				string mapHolder;
+				iss >> mapHolder >> a >> b >> c;
+				this->start.setCol(a);
+				this->start.setRow(b);
+				this->start.setYaw(c);
+			}
+	    	else if (line.find("goal:") != string::npos)
+	    	{
+				int a, b;
+				string mapHolder;
+				iss >> mapHolder >> a >> b;
+				this->goal.setCol(a);
+				this->goal.setRow(b);
+			}
+	    	else if (line.find("robotSize:") != string::npos)
+			{
+				int a, b;
+				string mapHolder;
+				iss >> mapHolder >> a >> b;
+				this->robot_size_x = a;
+				this->robot_size_y = b;
+			}
+	    	else if (line.find("GridResolutionCM:") != string::npos)
+			{
+				string mapHolder;
+				iss >> mapHolder >> grid_res;
+			}
+	    	else if (line.find("MapResolutionCM:") != string::npos)
+			{
+				string mapHolder;
+				iss >> mapHolder >> map_res;
+			}
+	    }
+	    myfile.close();
 	  }
-}
-string ConfigurationManager::getMapLocation() {
-	return (_configs.find("map")->second);
-}
 
-void ConfigurationManager::getStartLocation(int& x, int& y, double& yaw) {
-	vector<string> v = split(_configs.find("startLocation")->second, ' ');
-	x = atoi(((string)(v[0])).c_str());
-	y = atoi(((string)(v[1])).c_str());
-	yaw = atof(((string)(v[2])).c_str());
+	  else cout << "File could not open";
+
+	// TODO Auto-generated constructor stub
 }
 
-void ConfigurationManager::getGoal(int &x, int &y) {
-	vector<string> v = split(_configs.find("goal")->second, ' ');
-	x = atoi(((string)(v[0])).c_str());
-	y = atoi(((string)(v[1])).c_str());
+Position RobotParameters::GetStartLocation(){
+
+	return this->start;
 }
 
-void ConfigurationManager::getRobotSize(int& x, int& y) {
-	vector<string> v = split(_configs.find("robotSize")->second, ' ');
-	x = atoi(((string)(v[0])).c_str());
-	y = atoi(((string)(v[1])).c_str());
+
+Point RobotParameters::GetGoalLocation()
+{
+	return this->goal;
 }
 
-double ConfigurationManager::getMapResolution() {
-	return(strtod(((string)(_configs.find("MapResolutionCM")->second)).c_str(),NULL));
+string RobotParameters::GetMapPath(){
+	return this->map_path.c_str();
 }
 
-int ConfigurationManager::getGridResolution() {
-	return(atoi(((string)(_configs.find("GridResolutionCM")->second)).c_str()));
+void RobotParameters::GetRobotSize(int& x, int &y){
+	x = this->robot_size_x;
+	y = this->robot_size_y;
 }
 
-vector<string> ConfigurationManager::split(string str, const char delim) {
-    vector<string> v;
-    string tmp;
-    string::const_iterator i;
-
-    for(i = str.begin(); i <= str.end(); ++i) {
-        if(*i != delim && i != str.end()) {
-            tmp += *i;
-        } else {
-            v.push_back(tmp);
-            tmp = "";
-        }
-    }
-
-    return v;
+double RobotParameters::GetMapResolution(){
+	return this->map_res;
 }
 
-ConfigurationManager::~ConfigurationManager() {
+int RobotParameters::GetGridResolution(){
+	return this->grid_res;
+}
+
+RobotParameters::~RobotParameters() {
 	// TODO Auto-generated destructor stub
 }

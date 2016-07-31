@@ -203,14 +203,12 @@ void prindGridWithAstar(vector<Point> path, Grid grid) {
 int main() {
 	static ConfigurationManager conf;
 
-	int colStart, rowStart;
-	double yawStart;
-	ConfigurationManager::getStartLocation(colStart, rowStart, yawStart);
-	yawStart = DEGREE_TO_RADIAN(yawStart);
+	RobotParameters params("parameters.txt");
 
-	Position * startPosition = new Position(rowStart, colStart, yawStart);
+	Position startPosition = params.GetStartLocation();
+	startPosition.setYaw(DEGREE_TO_RADIAN(startPosition.getYaw()));
 
-	Map map = Map();
+	Map map = Map(params);
 	Grid grid = map.getGrid();
 
 	Robot robot(ROBOT_IP, 6665);
@@ -225,14 +223,14 @@ int main() {
 		robot.Read();
 	}
 	
-	PathSearcher* ps = new PathSearcher(grid);
+	PathSearcher* ps = new PathSearcher(params ,grid);
 
 	vector<Point> path = ps->searchPath(grid.getStartPoint(),
 			grid.getGoalPoint());
 
 	vector<Position> waypoint = ps->getWayPoints();
 
-	LocalizationManager localizationManager(startPosition, &map);
+	LocalizationManager localizationManager(&startPosition, &map);
 
 	vector<Position> waypointCopy = ps->getWayPoints();
 	
@@ -282,16 +280,15 @@ int main() {
 */
 // Player
 int main() {
-	static ConfigurationManager conf;
 
-	int colStart, rowStart;
-	double yawStart;
-	ConfigurationManager::getStartLocation(colStart, rowStart, yawStart);
-	yawStart = DEGREE_TO_RADIAN(yawStart);
 
-	Position * startPosition = new Position(rowStart, colStart, yawStart);
+	RobotParameters params("parameters.txt");
 
-	Map map = Map();
+		Position startPosition = params.GetStartLocation();
+		startPosition.setYaw(DEGREE_TO_RADIAN(startPosition.getYaw()));
+
+
+	Map map = Map(params);
 	Grid grid = map.getGrid();
 
 	Robot robot("localhost", 6665);
@@ -307,14 +304,14 @@ int main() {
 		robot.Read();
 	}
 
-	PathSearcher* ps = new PathSearcher(grid);
+	PathSearcher* ps = new PathSearcher(params ,grid);
 
 	vector<Point> path = ps->searchPath(grid.getStartPoint(),
 			grid.getGoalPoint());
 			
 	vector<Position> waypoint = ps->getWayPoints();
 
-	LocalizationManager * localizationManager = new LocalizationManager(startPosition, &map);
+	LocalizationManager * localizationManager = new LocalizationManager(&startPosition, &map);
 
 	vector<Position> waypointCopy = ps->getWayPoints();
 	

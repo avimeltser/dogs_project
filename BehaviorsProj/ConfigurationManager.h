@@ -1,36 +1,29 @@
-/*
- * ConfigurationManager.h
- *
- *  Created on: Jun 12, 2015
- *      Author: colman
- */
+#ifndef READROBOTPARAMETERS_H_
+#define READROBOTPARAMETERS_H_
 
-#ifndef CONFIGURATIONMANAGER_H_
-#define CONFIGURATIONMANAGER_H_
-
-#include <map>
 #include <string>
-#include <vector>
-#include <stdlib.h>
-#include <fstream>
-#include <iostream>
+#include "Utilities/Position.h"
+#include "Utilities/Global.h"
+#include "Utilities/Point.h"
 
-using namespace std;
-
-class ConfigurationManager {
+class RobotParameters
+{
 public:
-
-	ConfigurationManager();
-	static string getMapLocation();
-	static void getStartLocation(int& x, int& y, double& yaw);
-	static void getGoal(int &x, int &y);
-	static void getRobotSize(int& x, int& y);
-	static double getMapResolution();
-	static int getGridResolution();
-	virtual ~ConfigurationManager();
+	RobotParameters(char* config_file_path);
+	string GetMapPath();
+	Position GetStartLocation();
+	Point GetGoalLocation();
+	void GetRobotSize(int&x ,int &y);
+	double GetMapResolution();
+	int GetGridResolution();
+	virtual ~RobotParameters();
 private:
-	static map<string, string> _configs;
-	static vector<string> split(string str, const char delim);
+	Position start;
+	Point goal;
+	int robot_size_x;
+	int robot_size_y;
+	double grid_res;
+	int map_res;
+	std::string map_path;
 };
-
-#endif /* CONFIGURATIONMANAGER_H_ */
+#endif

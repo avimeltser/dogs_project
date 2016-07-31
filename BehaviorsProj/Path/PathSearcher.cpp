@@ -7,7 +7,9 @@
 
 #include "PathSearcher.h"
 
-PathSearcher::PathSearcher(Grid grid) {
+PathSearcher::PathSearcher(RobotParameters& prm, Grid grid)
+: _wayPoints(prm)
+{
 	this->_grid = grid;
 
 	// Init navigation members
