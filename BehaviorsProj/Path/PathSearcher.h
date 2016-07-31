@@ -18,21 +18,13 @@
 
 class PathSearcher {
 private:
-	// data members for navigation
-	unsigned _last_Point;
-	int _last_Direction;
-	WayPointsManager _wayPoints;
-
 	// Grid of the surface
 	Grid _grid;
-
-	// Claculated path
-	vector<Point> _path;
 
 	int** createPowerGrid();
 
 public:
-	PathSearcher(RobotParameters& prm, Grid grid);
+	PathSearcher(Grid grid);
 	virtual ~PathSearcher();
 
 	vector<Point> searchPath(Point startPoint, Point goalPoint);
@@ -41,13 +33,7 @@ public:
 	vector<Point> reconstructPath(Point** came_from, Point goalPoint);
 	queue<Point> getPointNeighbors(Point point);
 	bool isPointInsideVector(vector<Point> vector, Point point);
-	int getNextWayPoint();
-	void calculateWayPoints();
 	Position calcualteRealPosition(Point point);
-	vector<Position> getRealPath();
-	vector<Position> getWayPoints();
-
-
 
 };
 

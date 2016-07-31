@@ -75,18 +75,6 @@ float Robot::getYaw() {
 	return _pp.GetYaw();
 }
 
-float Robot::getRealX() {
-	return _pp.GetXPos();
-}
-
-float Robot::getRealY() {
-	return _pp.GetYPos();
-}
-
-float Robot::getRealYaw() {
-	return _pp.GetYaw();
-}
-
 float* Robot::getLaserScan() {
 	float *scan = new float[_lp.GetCount()];
 	for (unsigned int i = 0; i < _lp.GetCount(); i++) {

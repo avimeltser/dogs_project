@@ -16,15 +16,37 @@ WayPointsManager::WayPointsManager(RobotParameters& prm) {
 }
 
 
-void WayPointsManager::addWayPoint(Position waypoint)
+vector<Position> WayPointsManager::GetWayPoints(vector<Point> &path)
 {
-	WayPointsManager::_wayPoints.push_back(waypoint);
-}
+	this->_path = path;
 
-vector<Position> WayPointsManager::getWayPoints()
-{
+	// get the first direction
+	int direction = getNextWayPoint();
+
+	// Run until we stop (get to goal)
+	while (direction != STOP) {
+		// Check if the movement is not moving forward
+		if (direction != MOVE_FORWARD) {
+			//TODO: check if we need to enter real position
+			//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point -1]));
+			this->_wayPoints.push_back(
+					Position(this->_path[_last_Point - 1].getRow(),
+							this->_path[_last_Point - 1].getCol(), 0));
+		}
+
+		direction = getNextWayPoint();
+	}
+
+	//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point - 1]));
+	this->_wayPoints.push_back(
+			Position(this->_path[_last_Point - 1].getRow(),
+					this->_path[_last_Point - 1].getCol(), 0));
+
+
+	this->changeWaypointToImageResolution();
 	return this->_wayPoints;
 }
+
 
 void WayPointsManager::changeWaypointToImageResolution()
 {
@@ -88,31 +110,6 @@ int WayPointsManager::getNextWayPoint() {
 
 	return toReturn;
 }
-
-void WayPointsManager::calculateWayPoints() {
-	// get the first direction
-	int direction = getNextWayPoint();
-
-	// Run until we stop (get to goal)
-	while (direction != STOP) {
-		// Check if the movement is not moving forward
-		if (direction != MOVE_FORWARD) {
-			//TODO: check if we need to enter real position
-			//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point -1]));
-			this->_wayPoints.push_back(
-					Position(this->_path[_last_Point - 1].getRow(),
-							this->_path[_last_Point - 1].getCol(), 0));
-		}
-
-		direction = getNextWayPoint();
-	}
-
-	//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point - 1]));
-	this->_wayPoints.push_back(
-			Position(this->_path[_last_Point - 1].getRow(),
-					this->_path[_last_Point - 1].getCol(), 0));
-}
-
 
 WayPointsManager::~WayPointsManager() {
 	// TODO Auto-generated destructor stub

@@ -6,10 +6,8 @@
 #include "Map/Map.h"
 #include "Map/Grid.h"
 #include "Path/PathSearcher.h"
-#include "Manager.h"
 #include "LocalizationManager.h"
 #include "Particle.h"
-#include "Plans/PlnObstacleAvoid.h"
 #include "Utilities/Position.h"
 #include "Utilities/Global.h"
 #include "Utilities/Point.h"
@@ -139,7 +137,6 @@ double calcAngleDelta(Position currentPosition,
 		ang = M_PI - ang;
 		break;
 	case UP_RIGHT:
-		//ang = M_PI - 1.571 - ang;
 		//ang=ang;
 		break;
 	case DOWN_LEFT:
@@ -165,8 +162,6 @@ double calcAngleDelta(Position currentPosition,
 		return -1;
 	}
 
-// change the degree to radian
-//ang = (ang * M_PI) / 180;
 	return ang;
 }
 
@@ -198,10 +193,9 @@ void prindGridWithAstar(vector<Point> path, Grid grid) {
 	}
 	fclose(fgrid);
 }
-/*
+
 // Robot
-int main() {
-	static ConfigurationManager conf;
+int main2() {
 
 	RobotParameters params("parameters.txt");
 
@@ -213,7 +207,6 @@ int main() {
 
 	Robot robot(ROBOT_IP, 6665);
 	robot.Read();
-	
 	double initialRow = -2.875;
 	double initialCol = 2.175;
 	double initialYaw = 0.349;
@@ -222,17 +215,17 @@ int main() {
 		robot.UpdatePosition(initialRow, initialCol, initialYaw);
 		robot.Read();
 	}
-	
-	PathSearcher* ps = new PathSearcher(params ,grid);
+
+	PathSearcher* ps = new PathSearcher(grid);
 
 	vector<Point> path = ps->searchPath(grid.getStartPoint(),
 			grid.getGoalPoint());
 
-	vector<Position> waypoint = ps->getWayPoints();
-
 	LocalizationManager localizationManager(&startPosition, &map);
 
-	vector<Position> waypointCopy = ps->getWayPoints();
+	WayPointsManager way(params);
+
+	vector<Position> waypointCopy = way.GetWayPoints(path);
 	
 	unsigned wayPointIndex = 1;
 	
@@ -243,12 +236,13 @@ int main() {
 
 	changeYawRobot(angle, robot, localizationManager);
 
-	robot.setSpeed(FORWARD_SPEED, 0);
+	robot.setSpeed(FORWARD_SPEED_SLOW, 0);
 
 	double distance, currentDistance;
 
 	// Run until we didnt reached the last waypoint (goal)
 	while (wayPointIndex < waypointCopy.size()) {
+
 		readOnRobot(robot, localizationManager);
 
 		// Calcuate the metric distance between the robot and next position
@@ -271,30 +265,27 @@ int main() {
 
 			changeYawRobot(angle, robot, localizationManager);
 
-			robot.setSpeed(FORWARD_SPEED, 0);
+			robot.setSpeed(FORWARD_SPEED_SLOW, 0);
 		} 
 	}
 	
 	return 0;
 }
-*/
+
 // Player
 int main() {
 
-
 	RobotParameters params("parameters.txt");
 
-		Position startPosition = params.GetStartLocation();
-		startPosition.setYaw(DEGREE_TO_RADIAN(startPosition.getYaw()));
-
+	Position startPosition = params.GetStartLocation();
+	startPosition.setYaw(DEGREE_TO_RADIAN(startPosition.getYaw()));
 
 	Map map = Map(params);
 	Grid grid = map.getGrid();
 
 	Robot robot("localhost", 6665);
 
-	robot.Read();
-
+	//robot.Read();
 	double initialRow = -2.875;
 	double initialCol = 2.175;
 	double initialYaw = 0.785;
@@ -304,17 +295,17 @@ int main() {
 		robot.Read();
 	}
 
-	PathSearcher* ps = new PathSearcher(params ,grid);
+	PathSearcher* ps = new PathSearcher(grid);
 
 	vector<Point> path = ps->searchPath(grid.getStartPoint(),
 			grid.getGoalPoint());
-			
-	vector<Position> waypoint = ps->getWayPoints();
 
-	LocalizationManager * localizationManager = new LocalizationManager(&startPosition, &map);
+	LocalizationManager localizationManager(&startPosition, &map);
 
-	vector<Position> waypointCopy = ps->getWayPoints();
+	WayPointsManager way(params);
 	
+	vector<Position> waypointCopy = way.GetWayPoints(path);
+
 	unsigned wayPointIndex = 1;
 
 	for (int i = 0; i < 20; i++)
@@ -353,7 +344,7 @@ int main() {
 					nextPosition);
 			robot.ChangeYawRobotPlayer(angle);
 		} else {
-			robot.setSpeed(FORWARD_SPEED, 0);
+			robot.setSpeed(FORWARD_SPEED_SLOW, 0);
 		}
 	}
 	

@@ -35,10 +35,6 @@ public:
 	float getY();
 	float getYaw();
 
-	float getRealX();
-	float getRealY();
-	float getRealYaw();
-
 	Position*  getDeltaPosition();
 
 	void ChangeYawRobotPlayer(double dYaw);

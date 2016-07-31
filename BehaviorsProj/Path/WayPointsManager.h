@@ -14,24 +14,22 @@
 #include "../Utilities/Point.h"
 
 class WayPointsManager {
+
+public:
+	WayPointsManager(RobotParameters& params);
+	virtual ~WayPointsManager();
+
+	vector<Position> GetWayPoints(vector<Point> &path);
+
+	void changeWaypointToImageResolution();
+
 private:
+	int getNextWayPoint();
 	vector<Position> _wayPoints;
 	unsigned _last_Point;
 	int _last_Direction;
 	// Claculated path
 	vector<Point> _path;
-public:
-	WayPointsManager(RobotParameters& params);
-	virtual ~WayPointsManager();
-	vector<Position> getWayPoints();
-	void addWayPoint(Position waypoint);
-
-	int getNextWayPoint();
-	void calculateWayPoints();
-
-	void changeWaypointToImageResolution();
-
-private:
 	double _mapRes;
 	int _gridRes;
 };

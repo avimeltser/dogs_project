@@ -8,7 +8,6 @@
 #ifndef LOCALIZATIONMANAGER_H_
 #define LOCALIZATIONMANAGER_H_
 
-#include "Plans/PlnObstacleAvoid.h"
 #include "Robot.h"
 #include "Utilities/Position.h"
 #include "Utilities/Global.h"

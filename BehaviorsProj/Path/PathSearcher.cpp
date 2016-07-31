@@ -7,14 +7,9 @@
 
 #include "PathSearcher.h"
 
-PathSearcher::PathSearcher(RobotParameters& prm, Grid grid)
-: _wayPoints(prm)
+PathSearcher::PathSearcher(Grid grid)
+: _grid(grid)
 {
-	this->_grid = grid;
-
-	// Init navigation members
-	this->_last_Point = 0;
-	this->_last_Direction = MOVE_FORWARD;
 }
 
 PathSearcher::~PathSearcher() {
@@ -193,9 +188,6 @@ vector<Point> PathSearcher::searchPath(Point startPoint, Point goalPoint) {
 		}
 	}
 
-	this->_path = path;
-	this->calculateWayPoints();
-	this->_wayPoints.changeWaypointToImageResolution();
 	return path;
 
 }
@@ -285,78 +277,6 @@ bool PathSearcher::isPointInsideVector(vector<Point> vector, Point point) {
 	return false;
 }
 
-int PathSearcher::getNextWayPoint() {
-	int toReturn;
-	this->_last_Point++;
-
-	if (this->_last_Point != this->_path.size()) {
-		Point prev = this->_path[this->_last_Point - 1];
-		Point next = this->_path[this->_last_Point];
-
-		if (prev.getRow() == next.getRow()) {
-			if (prev.getCol() > next.getCol()) {
-				toReturn = LEFT;
-			} else if (prev.getCol() < next.getCol()) {
-				toReturn = RIGHT;
-			}
-		} else if (prev.getCol() == next.getCol()) {
-			if (prev.getRow() > next.getRow()) {
-				toReturn = UP;
-			} else if (prev.getRow() < next.getRow()) {
-				toReturn = DOWN;
-			}
-		} else {
-			if (prev.getRow() > next.getRow()) {
-				if (prev.getCol() > next.getCol()) {
-					toReturn = UP_LEFT;
-				} else {
-					toReturn = UP_RIGHT;
-				}
-			} else {
-				if (prev.getCol() > next.getCol()) {
-					toReturn = DOWN_LEFT;
-				} else {
-					toReturn = DOWN_RIGHT;
-				}
-			}
-		}
-
-		if (toReturn == this->_last_Direction) {
-			toReturn = MOVE_FORWARD;
-		} else {
-			this->_last_Direction = toReturn;
-		}
-	} else {
-		toReturn = STOP;
-	}
-
-	return toReturn;
-}
-
-void PathSearcher::calculateWayPoints() {
-	// get the first direction
-	int direction = getNextWayPoint();
-
-	// Run until we stop (get to goal)
-	while (direction != STOP) {
-		// Check if the movement is not moving forward
-		if (direction != MOVE_FORWARD) {
-			//TODO: check if we need to enter real position
-			//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point -1]));
-			this->_wayPoints.addWayPoint(
-					Position(this->_path[_last_Point - 1].getRow(),
-							this->_path[_last_Point - 1].getCol(), 0));
-		}
-
-		direction = getNextWayPoint();
-	}
-
-	//this->_wayPoints.addWayPoint(this->calcualteRealPosition(this->_path[_last_Point - 1]));
-	this->_wayPoints.addWayPoint(
-			Position(this->_path[_last_Point - 1].getRow(),
-					this->_path[_last_Point - 1].getCol(), 0));
-}
-
 Position PathSearcher::calcualteRealPosition(Point point) {
 	double gridResolution = this->_grid.getGridResolution();
 
@@ -366,15 +286,3 @@ Position PathSearcher::calcualteRealPosition(Point point) {
 	return Position(x, y, 0);
 }
 
-vector<Position> PathSearcher::getRealPath() {
-	vector<Position> realPath;
-	for (int i = 0; i < this->_path.size(); i++) {
-		realPath.push_back(calcualteRealPosition(this->_path[i]));
-	}
-
-	return realPath;
-}
-
-vector<Position> PathSearcher::getWayPoints() {
-	return this->_wayPoints.getWayPoints();
-}
